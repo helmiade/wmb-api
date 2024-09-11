@@ -7,6 +7,7 @@ import java.util.List;
 public interface TableService {
     Table create(Table table);
     Table findByName(String name);
+    Table findById(String id);
     List<Table> findAll();
     Table update(Table table);
     void delete(String id);

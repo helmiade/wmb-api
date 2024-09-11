@@ -37,6 +37,11 @@ public class TableServiceImpl implements TableService {
     }
 
     @Override
+    public Table findById(String id) {
+        return tableRepository.findById(id).orElse(null);
+    }
+
+    @Override
     public List<Table> findAll() {
         return tableRepository.findAll();
     }

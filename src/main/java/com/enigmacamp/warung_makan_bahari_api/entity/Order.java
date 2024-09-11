@@ -1,7 +1,9 @@
 package com.enigmacamp.warung_makan_bahari_api.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.boot.autoconfigure.amqp.RabbitConnectionDetails;
@@ -13,6 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@Builder
 @jakarta.persistence.Table(name = "t_order")
 public class Order {
     @Id
@@ -31,6 +34,7 @@ public class Order {
     private LocalDateTime transDate;
 
     @OneToMany(mappedBy = "order")
+    @JsonManagedReference
     private List<OrderDetail> orderDetails;
 
 }

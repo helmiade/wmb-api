@@ -1,14 +1,13 @@
 package com.enigmacamp.warung_makan_bahari_api.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @jakarta.persistence.Table(name = "m_table")
 public class Table {
     @Id
