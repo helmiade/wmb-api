@@ -1,14 +1,16 @@
 package com.enigmacamp.warung_makan_bahari_api.service.impl;
 
+import com.enigmacamp.warung_makan_bahari_api.dto.request.PagingRequest;
 import com.enigmacamp.warung_makan_bahari_api.entity.Customer;
 import com.enigmacamp.warung_makan_bahari_api.repository.CustomerRepository;
 import com.enigmacamp.warung_makan_bahari_api.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -36,13 +38,10 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public List<Customer> getAll(String param) {
-//        return (name==null&&phoneNumber==null)? customerRepository.findAll():customerRepository.findByNameIsContainingIgnoreCaseOrPhoneNumberEquals(name,phoneNumber);
-    if (param == null || param.isEmpty()) {
-        return customerRepository.findAll();
-    }
-    return customerRepository.findByPhoneNumberIgnoreCase(param);
-//        return customerRepository.findByNameIsContainingIgnoreCaseOrPhoneNumberEquals(name, phoneNumber);
+    public Page<Customer> getAll(PagingRequest request) {
+//        PageRequest pageRequest = PageRequest.of(request.getPage()-1, request.getSize());
+        Pageable pageable= PageRequest.of(request.getPage()-1, request.getSize());
+        return customerRepository.findAll(pageable);
     }
 
 

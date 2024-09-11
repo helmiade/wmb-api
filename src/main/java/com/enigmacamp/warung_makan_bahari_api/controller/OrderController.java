@@ -46,7 +46,7 @@ public class OrderController {
     }
 
     @GetMapping
-    public ResponseEntity<CommonResponse<List<OrderResponse>>> getAllOrders() {
+    public ResponseEntity<?> getAllOrders() {
         List<OrderResponse> orderResponse=orderService.getAll();
         CommonResponse<List<OrderResponse>> commonResponse=CommonResponse.<List<OrderResponse>>builder()
                 .message("succesfull get all transaction")

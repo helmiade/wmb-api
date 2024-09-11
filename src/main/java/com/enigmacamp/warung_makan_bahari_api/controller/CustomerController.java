@@ -1,14 +1,18 @@
 package com.enigmacamp.warung_makan_bahari_api.controller;
 
 
+import com.enigmacamp.warung_makan_bahari_api.dto.request.PagingRequest;
+import com.enigmacamp.warung_makan_bahari_api.dto.response.CommonResponse;
+import com.enigmacamp.warung_makan_bahari_api.dto.response.PagingResponse;
 import com.enigmacamp.warung_makan_bahari_api.entity.Customer;
 import com.enigmacamp.warung_makan_bahari_api.service.CustomerService;
-import com.enigmacamp.warung_makan_bahari_api.service.impl.CustomerServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/customers")
@@ -35,8 +39,33 @@ public class CustomerController {
 
     //get all customer
     @GetMapping
-    public List<Customer> getAllCustomers(@RequestParam(required = false) String param) {
-        return customerService.getAll(param);
+    public ResponseEntity<?> getAllCustomers(
+            @RequestParam(required = false, defaultValue = "1") Integer page,
+            @RequestParam(required = false, defaultValue = "5") Integer size ){
+        PagingRequest request = PagingRequest.builder()
+                .page(page)
+                .size(size)
+                .build();
+
+        Page<Customer> customers=customerService.getAll(request);
+        PagingResponse pagingResponse = PagingResponse.builder()
+                .page(page)
+                .size(size)
+                .count(customers.getTotalElements())
+                .totalPages(customers.getTotalPages())
+                .build();
+
+        CommonResponse<List<Customer>> response= CommonResponse.<List<Customer>>builder()
+                .message("successfully get all customer")
+                .statusCode(HttpStatus.OK.value())
+                .data(customers.getContent())
+                .paging(pagingResponse)
+                .build();
+
+        return ResponseEntity
+                .status(HttpStatus.OK.value())
+                .body(response);
+
     }
 
     //update

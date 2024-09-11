@@ -2,6 +2,7 @@ package com.enigmacamp.warung_makan_bahari_api.service.impl;
 
 import com.enigmacamp.warung_makan_bahari_api.dto.request.OrderDetailRequest;
 import com.enigmacamp.warung_makan_bahari_api.dto.request.OrderRequest;
+import com.enigmacamp.warung_makan_bahari_api.dto.response.MenuResponse;
 import com.enigmacamp.warung_makan_bahari_api.dto.response.OrderDetailResponse;
 import com.enigmacamp.warung_makan_bahari_api.dto.response.OrderResponse;
 import com.enigmacamp.warung_makan_bahari_api.entity.*;
@@ -64,7 +65,8 @@ public class OrderServiceImpl implements OrderService {
         //4. buat objek order details
         List<OrderDetail> orderDetails = new ArrayList<>();
         for(OrderDetailRequest orderDetailRequest:request.getOrderDetails()){
-            Menu menu = menuService.getById(orderDetailRequest.getMenuId());
+            Menu menu = menuService.findById(orderDetailRequest.getMenuId());
+//            Menu menu = menuService.getById(orderDetailRequest.getMenuId());
             OrderDetail orderDetail = OrderDetail.builder()
                     .menu(menu)
                     .price(menu.getPrice())
