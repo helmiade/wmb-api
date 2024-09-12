@@ -30,7 +30,7 @@ public class OrderDetailController {
     return ResponseEntity
             .status(HttpStatus.OK)
             .body(responseCommonResponse);
-        //        return orderDetailService.getById(id);
+
     }
     @GetMapping
     public ResponseEntity<CommonResponse<List<OrderDetailResponse>>> findAll() {

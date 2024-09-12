@@ -65,7 +65,13 @@ public class OrderServiceImpl implements OrderService {
         //4. buat objek order details
         List<OrderDetail> orderDetails = new ArrayList<>();
         for(OrderDetailRequest orderDetailRequest:request.getOrderDetails()){
-            Menu menu = menuService.findById(orderDetailRequest.getMenuId());
+            MenuResponse menuResponse = menuService.getById(orderDetailRequest.getMenuId());
+            Menu menu = Menu.builder()
+                    .id(menuResponse.getId())
+                    .name(menuResponse.getMenuName())
+                    .price(menuResponse.getPrice())
+                    .build();
+            //Menu menu = menuService.findById(orderDetailRequest.getMenuId());
 //            Menu menu = menuService.getById(orderDetailRequest.getMenuId());
             OrderDetail orderDetail = OrderDetail.builder()
                     .menu(menu)

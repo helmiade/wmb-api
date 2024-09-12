@@ -2,28 +2,26 @@ package com.enigmacamp.warung_makan_bahari_api.entity;
 
 import jakarta.persistence.*;
 import jakarta.persistence.Table;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Entity
-@Table(name = "m_customer")
-@Getter
-@Setter
-@NoArgsConstructor
+@Data
 @AllArgsConstructor
+@NoArgsConstructor
+@Entity
+@Table(name = "m_admin")
 @Builder
-public class Customer {
+public class Admin {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
-
-    @Column(name = "name")
+    @Column
     private String name;
 
-    @Column(name = "phone_number", unique = true)
-    private String phoneNumber;
-
-    @Column(name = "is_member")
-    private Boolean isMember=false;
+    @Column
+    private String password;
 
     @OneToOne
     @JoinColumn(name = "m_user_credential_id")
