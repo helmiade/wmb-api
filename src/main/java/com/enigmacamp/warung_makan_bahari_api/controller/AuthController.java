@@ -5,6 +5,7 @@ import com.enigmacamp.warung_makan_bahari_api.dto.response.CommonResponse;
 import com.enigmacamp.warung_makan_bahari_api.dto.response.LoginResponse;
 import com.enigmacamp.warung_makan_bahari_api.dto.response.RegisterResponse;
 import com.enigmacamp.warung_makan_bahari_api.service.AuthService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -43,6 +44,20 @@ public class AuthController {
 
         return ResponseEntity
                 .status(HttpStatus.OK.value())
+                .body(response);
+    }
+
+    @PostMapping("/register/admin")
+    public ResponseEntity<?> registerAdmin(@RequestBody AuthRequest authRequest) {
+        RegisterResponse registerResponse = authService.registerAdmin(authRequest);
+        CommonResponse<RegisterResponse> response= CommonResponse.<RegisterResponse>builder()
+                .message("successfully register new admin")
+                .statusCode(HttpStatus.CREATED.value())
+                .data(registerResponse)
+                .build();
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED.value())
                 .body(response);
     }
 }

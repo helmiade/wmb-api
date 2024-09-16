@@ -16,10 +16,10 @@ public class Customer {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
-    @Column(name = "name")
+    @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "phone_number", unique = true)
+    @Column(name = "phone_number", unique = true, nullable = false)
     private String phoneNumber;
 
     @Column(name = "is_member")

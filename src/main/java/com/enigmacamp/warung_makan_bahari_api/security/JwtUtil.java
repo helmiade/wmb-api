@@ -1,4 +1,4 @@
-package com.enigmacamp.warung_makan_bahari_api.util;
+package com.enigmacamp.warung_makan_bahari_api.security;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
@@ -6,12 +6,12 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.enigmacamp.warung_makan_bahari_api.entity.AppUser;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
@@ -19,25 +19,31 @@ import java.util.Map;
 @Component
 @Slf4j
 public class JwtUtil {
-    private final String jwtSecret="secret";
-    private final String appName="Warung Makan Bahari";
+    @Value("${app_warung_makan_bahari_jwt_secret}")
+    private String jwtSecret;
+
+    @Value("${app_warung_makan_bahari_app_name}")
+    private String appName;
+
+    @Value("${app_warung_makan_bahari_app_jwtExpirationInSec}")
+    private long jwtExpirationInSec;
 //    private final Logger logger= LoggerFactory.getLogger(this.getClass());
 
-    public String generateToken(String userId) {
+    public String generateToken(AppUser appUser) {
         try {
             Algorithm algorithm = Algorithm.HMAC256(jwtSecret.getBytes());
             String token = JWT.create()
-                    .withSubject(userId)
+                    .withSubject(appUser.getId())
                     .withIssuer(appName)
-                    .withExpiresAt(Instant.now().plusSeconds(60*60))
+                    .withExpiresAt(Instant.now().plusSeconds(jwtExpirationInSec))
                     .withIssuedAt(Instant.now())
-                    .withClaim("role","ROLE_CUSTOMER")
+                    .withClaim("role",appUser.getRole().name())
                     .sign(algorithm);
 
             return token;
         }catch (JWTCreationException exception){
-            log.error("error while generating token", exception.getMessage());
-            throw new RuntimeException("error while generating token");
+            log.error("error while generating token: {}", exception.getMessage());
+            throw new RuntimeException(exception);
         }
     }
 
@@ -49,19 +55,19 @@ public class JwtUtil {
             decodedJWT = verifier.verify(token);
             return decodedJWT.getIssuer().equals(appName);
         } catch (JWTVerificationException exception){
-            log.error("invalid verification JWT: ", exception.getMessage());
+            log.error("invalid verification JWT: {}", exception.getMessage());
             return false;
         }
     }
 
-    public Map<String, Object> getUserInfoByToken(String token) {
+    public Map<String, String> getUserInfoByToken(String token) {
         DecodedJWT decodedJWT;
         try {
             Algorithm algorithm = Algorithm.HMAC256(jwtSecret.getBytes());
             JWTVerifier verifier = JWT.require(algorithm).build();
             decodedJWT = verifier.verify(token);
 
-            Map<String, Object> userInfo = new HashMap<>();
+            Map<String, String> userInfo = new HashMap<>();
             userInfo.put("userId", decodedJWT.getSubject());
             userInfo.put("role", decodedJWT.getClaim("role").asString());
 

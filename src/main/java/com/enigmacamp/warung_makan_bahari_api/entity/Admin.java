@@ -17,11 +17,7 @@ public class Admin {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
-    @Column
     private String name;
-
-    @Column
-    private String password;
 
     @OneToOne
     @JoinColumn(name = "m_user_credential_id")

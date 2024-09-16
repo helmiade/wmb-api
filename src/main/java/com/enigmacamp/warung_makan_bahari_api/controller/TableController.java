@@ -4,6 +4,7 @@ import com.enigmacamp.warung_makan_bahari_api.entity.Customer;
 import com.enigmacamp.warung_makan_bahari_api.entity.Table;
 import com.enigmacamp.warung_makan_bahari_api.service.TableService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/table")
 @RequiredArgsConstructor
+@PreAuthorize("hasRole('ADMIN')")
 public class TableController {
     private final TableService tableService;
 

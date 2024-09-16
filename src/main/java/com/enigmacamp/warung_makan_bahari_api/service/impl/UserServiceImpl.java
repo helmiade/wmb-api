@@ -5,6 +5,8 @@ import com.enigmacamp.warung_makan_bahari_api.entity.UserCredential;
 import com.enigmacamp.warung_makan_bahari_api.repository.UserCredentialRepository;
 import com.enigmacamp.warung_makan_bahari_api.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -12,7 +14,8 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
-    private UserCredentialRepository userCredentialRepository;
+    private static final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
+    private final UserCredentialRepository userCredentialRepository;
 
 
 
@@ -32,10 +35,11 @@ public class UserServiceImpl implements UserService {
 //verifikasi authentikasi login
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+//        log.info("Loading user {}", username);
         UserCredential userCredential = userCredentialRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("Invalid Credential"));
         return AppUser.builder()
                 .id(userCredential.getId())
-                .username(userCredential.getUsername())
+                .username(userCredential.getUsername().toLowerCase())
                 .password(userCredential.getPassword())
                 .role(userCredential.getRole().getName())
                 .build();
