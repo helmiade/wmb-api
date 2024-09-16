@@ -13,7 +13,7 @@ public interface MenuService {
     MenuResponse create(MenuRequest menuRequest);
     MenuResponse getById(String id);
     Page<Menu> getAll(PagingRequest request);
-    Menu update(Menu menu);
+    MenuResponse update(Menu menu);
     void deleteById(String id);
-    Menu findById(String id);
+//    Menu findById(String id);
 }

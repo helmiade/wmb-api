@@ -1,9 +1,12 @@
 package com.enigmacamp.warung_makan_bahari_api.controller;
 
 import com.enigmacamp.warung_makan_bahari_api.dto.request.AuthRequest;
+import com.enigmacamp.warung_makan_bahari_api.dto.request.RegisterAdminRequest;
+import com.enigmacamp.warung_makan_bahari_api.dto.request.RegisterCustomerRequest;
 import com.enigmacamp.warung_makan_bahari_api.dto.response.CommonResponse;
 import com.enigmacamp.warung_makan_bahari_api.dto.response.LoginResponse;
 import com.enigmacamp.warung_makan_bahari_api.dto.response.RegisterResponse;
+import com.enigmacamp.warung_makan_bahari_api.mapper.CommonResponseMapper;
 import com.enigmacamp.warung_makan_bahari_api.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -18,16 +21,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
 public class AuthController {
+    private final CommonResponseMapper commonResponseMapper;
     private final AuthService authService;
     @PostMapping("/register/customer")
-    public ResponseEntity<?> registerCustomer(@RequestBody AuthRequest authRequest) {
-        RegisterResponse registerResponse = authService.registerCustomer(authRequest);
-        CommonResponse<RegisterResponse> response= CommonResponse.<RegisterResponse>builder()
-                .message("successfully register new customer")
-                .statusCode(HttpStatus.CREATED.value())
-                .data(registerResponse)
-                .build();
-
+    public ResponseEntity<?> registerCustomer(@RequestBody RegisterCustomerRequest registerCustomerRequest) {
+        RegisterResponse registerResponse = authService.registerCustomer(registerCustomerRequest);
+        CommonResponse<RegisterResponse> response= commonResponseMapper.commonResponseToMap(registerResponse);
         return ResponseEntity
                 .status(HttpStatus.CREATED.value())
                 .body(response);
@@ -36,26 +35,16 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody AuthRequest authRequest) {
         LoginResponse loginResponse = authService.login(authRequest);
-        CommonResponse<LoginResponse> response= CommonResponse.<LoginResponse>builder()
-                .message("successfully login customer")
-                .statusCode(HttpStatus.OK.value())
-                .data(loginResponse)
-                .build();
-
+        CommonResponse<LoginResponse> response = commonResponseMapper.commonResponseToMap(loginResponse);
         return ResponseEntity
                 .status(HttpStatus.OK.value())
                 .body(response);
     }
 
     @PostMapping("/register/admin")
-    public ResponseEntity<?> registerAdmin(@RequestBody AuthRequest authRequest) {
-        RegisterResponse registerResponse = authService.registerAdmin(authRequest);
-        CommonResponse<RegisterResponse> response= CommonResponse.<RegisterResponse>builder()
-                .message("successfully register new admin")
-                .statusCode(HttpStatus.CREATED.value())
-                .data(registerResponse)
-                .build();
-
+    public ResponseEntity<?> registerAdmin(@RequestBody RegisterAdminRequest registerAdminRequest) {
+        RegisterResponse registerResponse = authService.registerAdmin(registerAdminRequest);
+        CommonResponse<RegisterResponse> response= commonResponseMapper.commonResponseToMap(registerResponse);
         return ResponseEntity
                 .status(HttpStatus.CREATED.value())
                 .body(response);

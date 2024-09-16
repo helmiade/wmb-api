@@ -36,10 +36,6 @@ public class OrderServiceImpl implements OrderService {
     public OrderResponse createNewTransaction(OrderRequest request) {
         Customer customer = customerService.getById(request.getCustomerId());
         Table table= tableService.findById(request.getTableId());
-
-
-
-
         //1. buat objek order
         Order order = Order.builder()
                 .customer(customer)
@@ -51,17 +47,6 @@ public class OrderServiceImpl implements OrderService {
         orderRepository.saveAndFlush(order);
 
 
-        //2. buat objek customer
-//        customer.setId(request.getCustomerId());
-//        order.setCustomer(customer);
-//
-//
-//        //3. buat objek table
-////        Table table= new Table();
-//        table.setId(request.getTableId());
-//        order.setTable(table);
-
-
         //4. buat objek order details
         List<OrderDetail> orderDetails = new ArrayList<>();
         for(OrderDetailRequest orderDetailRequest:request.getOrderDetails()){
@@ -71,8 +56,6 @@ public class OrderServiceImpl implements OrderService {
                     .name(menuResponse.getMenuName())
                     .price(menuResponse.getPrice())
                     .build();
-            //Menu menu = menuService.findById(orderDetailRequest.getMenuId());
-//            Menu menu = menuService.getById(orderDetailRequest.getMenuId());
             OrderDetail orderDetail = OrderDetail.builder()
                     .menu(menu)
                     .price(menu.getPrice())
@@ -80,40 +63,12 @@ public class OrderServiceImpl implements OrderService {
                     .quantity(orderDetailRequest.getQuantity())
                     .build();
             orderDetails.add(orderDetail);
-//            menu.setId(orderDetailRequest.getMenuId());
-//            orderDetail.setMenu(menu);
-//            orderDetail.setPrice(menu.getPrice());
-//            orderDetail.setQuantity(orderDetailRequest.getQuantity());
-//            orderDetail.setOrder(order);
         }
         order.setOrderDetails(orderDetails);
 
         //set date
 //        order.setTransDate(LocalDateTime.now());
         orderDetailService.createBulk(orderDetails);
-
-
-        // save order
-
-
-        //1. create bulk order detail
-//        OrderResponse orderResponse = OrderResponse.builder()
-//                .orderId(order.getId())
-//                .customerId(order.getCustomer().getId())
-//                .tableName(order.getTable().getTableName())
-//                .orderDetails(orderDetailResponses)
-//                .transDate(order.getTransDate())
-//                .build();
-
-
-
-        //set order detail
-//        for (OrderDetail orderDetail : order.getOrderDetails()) {
-//            orderDetail.setOrder(order);
-//        }
-
-//        return orderResponse;
-//        return orderRepository.saveAndFlush(order);
 
         return mapToOrderResponse(order);
     }

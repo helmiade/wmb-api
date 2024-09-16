@@ -39,7 +39,6 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public Page<Customer> getAll(PagingRequest request) {
-//        PageRequest pageRequest = PageRequest.of(request.getPage()-1, request.getSize());
         Pageable pageable= PageRequest.of(request.getPage()-1, request.getSize());
         return customerRepository.findAll(pageable);
     }

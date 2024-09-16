@@ -7,7 +7,11 @@ import com.enigmacamp.warung_makan_bahari_api.dto.response.MenuResponse;
 import com.enigmacamp.warung_makan_bahari_api.dto.response.PagingResponse;
 import com.enigmacamp.warung_makan_bahari_api.entity.Customer;
 import com.enigmacamp.warung_makan_bahari_api.entity.Menu;
+import com.enigmacamp.warung_makan_bahari_api.mapper.CommonResponseMapper;
+import com.enigmacamp.warung_makan_bahari_api.mapper.PagingRequestMapper;
+import com.enigmacamp.warung_makan_bahari_api.mapper.PagingResponseMapper;
 import com.enigmacamp.warung_makan_bahari_api.service.MenuService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -19,37 +23,20 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/menu")
+@RequiredArgsConstructor
 public class MenuController {
-    private MenuService menuService;
-
-    @Autowired
-    public MenuController(MenuService menuService) {
-        this.menuService = menuService;
-    }
+    private final MenuService menuService;
+    private final CommonResponseMapper commonResponseMapper;
+    private final PagingResponseMapper pagingResponseMapper;
+    private final PagingRequestMapper pagingRequestMapper;
 
     @GetMapping
     public ResponseEntity<?> getAllMenu(@RequestParam(required = false, defaultValue = "1") Integer page,
                                         @RequestParam(required = false, defaultValue = "5") Integer size) {
-        PagingRequest request = PagingRequest.builder()
-                .page(page)
-                .size(size)
-                .build();
-
+        PagingRequest request = pagingRequestMapper.pagingRequest(page, size);
         Page<Menu> menus=menuService.getAll(request);
-        PagingResponse pagingResponse = PagingResponse.builder()
-                .page(page)
-                .size(size)
-                .count(menus.getTotalElements())
-                .totalPages(menus.getTotalPages())
-                .build();
-
-        CommonResponse<List<Menu>> response= CommonResponse.<List<Menu>>builder()
-                .message("successfully get all customer")
-                .statusCode(HttpStatus.OK.value())
-                .data(menus.getContent())
-                .paging(pagingResponse)
-                .build();
-
+        PagingResponse pagingResponse = pagingResponseMapper.pagingResponseToMapper(menus,page,size);
+        CommonResponse<List<Menu>> response= commonResponseMapper.commonResponseToMap(menus,pagingResponse);
         return ResponseEntity
                 .status(HttpStatus.OK.value())
                 .body(response);
@@ -61,7 +48,8 @@ public class MenuController {
     }
 
     @PutMapping
-    public Menu update(@RequestBody Menu menu) {
+    @PreAuthorize("hasRole('ADMIN')")
+    public MenuResponse update(@RequestBody Menu menu) {
         return menuService.update(menu);
     }
 
@@ -72,6 +60,7 @@ public class MenuController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public void deleteById(@PathVariable String id) {
         menuService.deleteById(id);
     }
