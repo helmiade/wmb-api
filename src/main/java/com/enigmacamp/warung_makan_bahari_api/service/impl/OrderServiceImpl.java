@@ -2,6 +2,7 @@ package com.enigmacamp.warung_makan_bahari_api.service.impl;
 
 import com.enigmacamp.warung_makan_bahari_api.dto.request.OrderDetailRequest;
 import com.enigmacamp.warung_makan_bahari_api.dto.request.OrderRequest;
+import com.enigmacamp.warung_makan_bahari_api.dto.request.PagingRequest;
 import com.enigmacamp.warung_makan_bahari_api.dto.response.MenuResponse;
 import com.enigmacamp.warung_makan_bahari_api.dto.response.OrderDetailResponse;
 import com.enigmacamp.warung_makan_bahari_api.dto.response.OrderResponse;
@@ -10,6 +11,9 @@ import com.enigmacamp.warung_makan_bahari_api.repository.OrderRepository;
 import com.enigmacamp.warung_makan_bahari_api.service.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -99,21 +103,26 @@ public class OrderServiceImpl implements OrderService {
         return mapToOrderResponse(order);
     }
 
+
+//    public List<OrderResponse> getAll() {
+//        List<Order> orders = orderRepository.findAll();
+//
+//        List<OrderResponse> orderResponses = new ArrayList<>();
+//        for(Order order:orders){
+//            OrderResponse orderResponse = mapToOrderResponse(order);
+//            orderResponses.add(orderResponse);
+//        }
+//        //cara kedua
+////        List<OrderResponse> orderResponseList=orders.stream().map(order -> mapToOrderResponse(order)).collect(Collectors.toList());
+//        List<OrderResponse> orderResponseList=orders.stream().map(OrderServiceImpl::mapToOrderResponse).toList();
+//
+//
+//
+//        return orderResponseList;
+//    }
     @Override
-    public List<OrderResponse> getAll() {
-        List<Order> orders = orderRepository.findAll();
-
-        List<OrderResponse> orderResponses = new ArrayList<>();
-        for(Order order:orders){
-            OrderResponse orderResponse = mapToOrderResponse(order);
-            orderResponses.add(orderResponse);
-        }
-        //cara kedua
-//        List<OrderResponse> orderResponseList=orders.stream().map(order -> mapToOrderResponse(order)).collect(Collectors.toList());
-        List<OrderResponse> orderResponseList=orders.stream().map(OrderServiceImpl::mapToOrderResponse).toList();
-
-
-
-        return orderResponseList;
+    public Page<Order> getAll(PagingRequest request) {
+        Pageable pageable= PageRequest.of(request.getPage()-1, request.getSize());
+        return orderRepository.findAll(pageable);
     }
 }

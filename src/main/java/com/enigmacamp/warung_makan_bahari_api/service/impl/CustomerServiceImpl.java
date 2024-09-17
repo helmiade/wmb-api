@@ -9,7 +9,9 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Optional;
 
@@ -58,6 +60,6 @@ public class CustomerServiceImpl implements CustomerService {
 
     private Customer findByIdOrThrowError(String id) {
         Optional<Customer> customer= customerRepository.findById(id);
-        return customer.orElseThrow(() -> new RuntimeException("customer not found"));
+        return customer.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"customer not found"));
     }
 }
