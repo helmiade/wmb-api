@@ -1,8 +1,10 @@
 package com.enigmacamp.warung_makan_bahari_api.controller;
 
 
+import com.enigmacamp.warung_makan_bahari_api.dto.request.CustomerRequest;
 import com.enigmacamp.warung_makan_bahari_api.dto.request.PagingRequest;
 import com.enigmacamp.warung_makan_bahari_api.dto.response.CommonResponse;
+import com.enigmacamp.warung_makan_bahari_api.dto.response.CustomerResponse;
 import com.enigmacamp.warung_makan_bahari_api.dto.response.PagingResponse;
 import com.enigmacamp.warung_makan_bahari_api.entity.Customer;
 import com.enigmacamp.warung_makan_bahari_api.mapper.CommonResponseMapper;
@@ -31,8 +33,8 @@ public class CustomerController {
 
     //post/ create new customer
     @PostMapping
-    public Customer createNewCustomer(@RequestBody Customer customer) {
-        return customerService.createNew(customer);
+    public CustomerResponse createNewCustomer(@RequestBody CustomerRequest request) {
+        return customerService.createNew(request);
     }
 
     //get by id
@@ -65,8 +67,8 @@ public class CustomerController {
 
     //update
     @PutMapping
-    public Customer updateCustomer(@RequestBody Customer customer) {
-        return customerService.update(customer);
+    public CustomerResponse updateCustomer(@RequestBody CustomerRequest request) {
+        return customerService.update(request);
     }
 
     //delete by id

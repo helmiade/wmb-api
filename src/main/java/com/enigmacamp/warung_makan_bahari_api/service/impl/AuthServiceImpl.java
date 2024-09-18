@@ -7,10 +7,7 @@ import com.enigmacamp.warung_makan_bahari_api.dto.request.RegisterCustomerReques
 import com.enigmacamp.warung_makan_bahari_api.dto.response.LoginResponse;
 import com.enigmacamp.warung_makan_bahari_api.dto.response.RegisterResponse;
 import com.enigmacamp.warung_makan_bahari_api.entity.*;
-import com.enigmacamp.warung_makan_bahari_api.mapper.AdminMapper;
-import com.enigmacamp.warung_makan_bahari_api.mapper.CustomerMapper;
-import com.enigmacamp.warung_makan_bahari_api.mapper.RegisterResponMapper;
-import com.enigmacamp.warung_makan_bahari_api.mapper.UserCredentialMapper;
+import com.enigmacamp.warung_makan_bahari_api.mapper.*;
 import com.enigmacamp.warung_makan_bahari_api.repository.UserCredentialRepository;
 import com.enigmacamp.warung_makan_bahari_api.service.AdminService;
 import com.enigmacamp.warung_makan_bahari_api.service.AuthService;
@@ -58,8 +55,10 @@ public class AuthServiceImpl implements AuthService {
             Role role = roleService.getOrSave(Role.builder().name(ERole.ROLE_CUSTOMER).build());
             UserCredential userCredential=userCredentialMapper.mapToUserCredential(registerCustomerRequest, role);
             userCredentialRepository.saveAndFlush(userCredential);
+
             Customer customer= customerMapper.customerMapper(registerCustomerRequest, userCredential);
-            customerService.createNew(customer);
+
+            customerService.createNew(CustomerRequestMapper.customerRequestMapper(customer));
             return registerResponMapper.mapToRegisterResponse(userCredential);
 
         }catch (DataIntegrityViolationException e) {

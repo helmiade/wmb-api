@@ -1,9 +1,15 @@
 package com.enigmacamp.warung_makan_bahari_api.service.impl;
 
+import com.enigmacamp.warung_makan_bahari_api.dto.request.CustomerRequest;
 import com.enigmacamp.warung_makan_bahari_api.dto.request.PagingRequest;
+import com.enigmacamp.warung_makan_bahari_api.dto.response.CommonResponse;
+import com.enigmacamp.warung_makan_bahari_api.dto.response.CustomerResponse;
 import com.enigmacamp.warung_makan_bahari_api.entity.Customer;
+import com.enigmacamp.warung_makan_bahari_api.mapper.CustomerMapper;
+import com.enigmacamp.warung_makan_bahari_api.mapper.CustomerResponseMapper;
 import com.enigmacamp.warung_makan_bahari_api.repository.CustomerRepository;
 import com.enigmacamp.warung_makan_bahari_api.service.CustomerService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
@@ -16,18 +22,17 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class CustomerServiceImpl implements CustomerService {
     private final CustomerRepository customerRepository;
-
-    @Autowired
-    public CustomerServiceImpl(CustomerRepository customerRepository) {
-        this.customerRepository = customerRepository;
-    }
+    private final CustomerMapper customerMapper;
 
     @Override
-    public Customer createNew(Customer customer) {
+    public CustomerResponse createNew(CustomerRequest request) {
+        Customer customer = CustomerMapper.customerMapper(request);
         try {
-            return customerRepository.save(customer);
+            customerRepository.saveAndFlush(customer);
+            return CustomerResponseMapper.customerResponseMapper(customer);
         } catch (DataIntegrityViolationException e) {
             throw new DataIntegrityViolationException("phone number already exists");
         }
@@ -35,8 +40,9 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public Customer getById(String id) {
-        return findByIdOrThrowError(id);
+    public CustomerResponse getById(String id) {
+        Customer customer=findByIdOrThrowError(id);
+        return CustomerResponseMapper.customerResponseMapper(customer);
     }
 
     @Override
@@ -47,9 +53,11 @@ public class CustomerServiceImpl implements CustomerService {
 
 
     @Override
-    public Customer update(Customer customer) {
-        findByIdOrThrowError(customer.getId());
-        return customerRepository.save(customer);
+    public CustomerResponse update(CustomerRequest request) {
+
+        Customer customer= CustomerMapper.customerMapper(request);
+        Customer findId= findByIdOrThrowError(customer.getId());
+        return CustomerResponseMapper.customerResponseMapper(findId);
     }
 
     @Override

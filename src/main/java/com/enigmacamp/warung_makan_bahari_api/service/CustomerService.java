@@ -1,13 +1,15 @@
 package com.enigmacamp.warung_makan_bahari_api.service;
 
+import com.enigmacamp.warung_makan_bahari_api.dto.request.CustomerRequest;
 import com.enigmacamp.warung_makan_bahari_api.dto.request.PagingRequest;
+import com.enigmacamp.warung_makan_bahari_api.dto.response.CustomerResponse;
 import com.enigmacamp.warung_makan_bahari_api.entity.Customer;
 import org.springframework.data.domain.Page;
 
 public interface CustomerService {
-    Customer createNew(Customer customer);
-    Customer getById(String id);
+    CustomerResponse createNew(CustomerRequest request);
+    CustomerResponse getById(String id);
     Page<Customer> getAll(PagingRequest request);
-    Customer update(Customer customer);
+    CustomerResponse update(CustomerRequest request);
     void deleteById(String id);
 }

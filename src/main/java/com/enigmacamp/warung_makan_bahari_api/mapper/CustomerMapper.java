@@ -1,17 +1,19 @@
 package com.enigmacamp.warung_makan_bahari_api.mapper;
 
+import com.enigmacamp.warung_makan_bahari_api.dto.request.CustomerRequest;
 import com.enigmacamp.warung_makan_bahari_api.dto.request.RegisterCustomerRequest;
 import com.enigmacamp.warung_makan_bahari_api.entity.Customer;
 import com.enigmacamp.warung_makan_bahari_api.entity.UserCredential;
 import com.enigmacamp.warung_makan_bahari_api.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 
-@Configuration
+@Component
 @RequiredArgsConstructor
 public class CustomerMapper {
     private final UserService userService;
-    public Customer customerMapper(RegisterCustomerRequest registerCustomerRequest, UserCredential userCredential) {
+    public static Customer customerMapper(RegisterCustomerRequest registerCustomerRequest, UserCredential userCredential) {
         return Customer.builder()
                 .isMember(registerCustomerRequest.getIsMember())
                 .name(registerCustomerRequest.getName())
@@ -19,4 +21,11 @@ public class CustomerMapper {
                 .userCredential(userCredential)
                 .build();
     }
+    public static Customer customerMapper(CustomerRequest customerRequest) {
+        return Customer.builder()
+                .name(customerRequest.getName())
+                .phoneNumber(customerRequest.getPhoneNumber())
+                .build();
+    }
+
 }

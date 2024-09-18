@@ -1,6 +1,10 @@
 package com.enigmacamp.warung_makan_bahari_api.service.impl;
 
+import com.enigmacamp.warung_makan_bahari_api.dto.request.TableRequest;
+import com.enigmacamp.warung_makan_bahari_api.dto.response.TableResponse;
 import com.enigmacamp.warung_makan_bahari_api.entity.Table;
+import com.enigmacamp.warung_makan_bahari_api.mapper.TableMapper;
+import com.enigmacamp.warung_makan_bahari_api.mapper.TableResponseMapper;
 import com.enigmacamp.warung_makan_bahari_api.repository.TableRepository;
 import com.enigmacamp.warung_makan_bahari_api.service.TableService;
 import lombok.RequiredArgsConstructor;
@@ -18,27 +22,31 @@ public class TableServiceImpl implements TableService {
     private final TableRepository tableRepository;
 
     @Override
-    public Table create(Table table) {
-        if(table.getTableName()==null) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Table name is required");
-        Optional<Table> existingTableName= tableRepository.findByTableNameIgnoreCase(table.getTableName());
+    public TableResponse create(TableRequest request) {
+        if(request.getTableName()==null) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Table name is required");
+        Optional<Table> existingTableName= tableRepository.findByTableNameIgnoreCase(request.getTableName());
         if (existingTableName.isPresent()) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Table already exists");
         }
-        return tableRepository.save(table);
+        Table table = TableMapper.mapToTable(request);
+        tableRepository.save(table);
+        return TableResponseMapper.mapToTableResponse(table);
     }
 
     @Override
-    public Table findByName(String name) {
+    public TableResponse findByName(String name) {
         Optional<Table> existingTableName= tableRepository.findByTableNameIgnoreCase(name);
         if (existingTableName.isPresent()) {
-            return existingTableName.get();
+            Table table= existingTableName.get();
+            return TableResponseMapper.mapToTableResponse(table);
         }
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Table with name " + name + " not found");
     }
 
     @Override
-    public Table findById(String id) {
-        return tableRepository.findById(id).orElse(null);
+    public TableResponse findById(String id) {
+        Table table= tableRepository.findById(id).orElse(null);
+        return TableResponseMapper.mapToTableResponse(table);
     }
 
     @Override
@@ -47,12 +55,14 @@ public class TableServiceImpl implements TableService {
     }
 
     @Override
-    public Table update(Table table) {
+    public TableResponse update(TableRequest request) {
+        Table table= TableMapper.mapToTable(request);
         if (table.getId() == null) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Table id cant be null");
         if(table.getTableName()==null) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Table name cant be null");
         try {
-            findByIdOrThrowNotFound(table.getId());
-            return tableRepository.save(table);
+            Table foundTable=findByIdOrThrowNotFound(table.getId());
+            tableRepository.save(table);
+            return TableResponseMapper.mapToTableResponse(foundTable);
         } catch (DataIntegrityViolationException e) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Table already exists");
         }

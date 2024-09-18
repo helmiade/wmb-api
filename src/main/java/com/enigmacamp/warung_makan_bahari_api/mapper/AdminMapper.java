@@ -4,8 +4,9 @@ import com.enigmacamp.warung_makan_bahari_api.dto.request.RegisterAdminRequest;
 import com.enigmacamp.warung_makan_bahari_api.entity.Admin;
 import com.enigmacamp.warung_makan_bahari_api.entity.UserCredential;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 
-@Configuration
+@Component
 public class AdminMapper {
     public Admin mapToAdmin(RegisterAdminRequest registerAdminRequest, UserCredential userCredential) {
         return Admin.builder()

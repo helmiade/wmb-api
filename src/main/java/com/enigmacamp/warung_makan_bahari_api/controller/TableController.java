@@ -1,5 +1,7 @@
 package com.enigmacamp.warung_makan_bahari_api.controller;
 
+import com.enigmacamp.warung_makan_bahari_api.dto.request.TableRequest;
+import com.enigmacamp.warung_makan_bahari_api.dto.response.TableResponse;
 import com.enigmacamp.warung_makan_bahari_api.entity.Customer;
 import com.enigmacamp.warung_makan_bahari_api.entity.Table;
 import com.enigmacamp.warung_makan_bahari_api.service.TableService;
@@ -17,13 +19,13 @@ public class TableController {
     private final TableService tableService;
 
     @PostMapping
-    public Table createNewTable(@RequestBody Table table) {
-        return tableService.create(table);
+    public TableResponse createNewTable(@RequestBody TableRequest request) {
+        return tableService.create(request);
     }
 
     //get by id
     @GetMapping("/{name}")
-    public Table getTableByName(@PathVariable String name) {
+    public TableResponse getTableByName(@PathVariable String name) {
         return tableService.findByName(name);
     }
 
@@ -35,8 +37,8 @@ public class TableController {
 
     //update
     @PutMapping
-    public Table updateTable(@RequestBody Table table) {
-        return tableService.update(table);
+    public TableResponse updateTable(@RequestBody TableRequest request) {
+        return tableService.update(request);
     }
 
     //delete by id
