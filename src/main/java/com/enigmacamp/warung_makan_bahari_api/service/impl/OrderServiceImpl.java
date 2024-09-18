@@ -3,10 +3,10 @@ package com.enigmacamp.warung_makan_bahari_api.service.impl;
 import com.enigmacamp.warung_makan_bahari_api.dto.request.OrderDetailRequest;
 import com.enigmacamp.warung_makan_bahari_api.dto.request.OrderRequest;
 import com.enigmacamp.warung_makan_bahari_api.dto.request.PagingRequest;
-import com.enigmacamp.warung_makan_bahari_api.dto.response.MenuResponse;
-import com.enigmacamp.warung_makan_bahari_api.dto.response.OrderDetailResponse;
-import com.enigmacamp.warung_makan_bahari_api.dto.response.OrderResponse;
+import com.enigmacamp.warung_makan_bahari_api.dto.response.*;
 import com.enigmacamp.warung_makan_bahari_api.entity.*;
+import com.enigmacamp.warung_makan_bahari_api.mapper.CustomerMapper;
+import com.enigmacamp.warung_makan_bahari_api.mapper.TableMapper;
 import com.enigmacamp.warung_makan_bahari_api.repository.OrderRepository;
 import com.enigmacamp.warung_makan_bahari_api.service.*;
 import jakarta.transaction.Transactional;
@@ -38,8 +38,10 @@ public class OrderServiceImpl implements OrderService {
     @Transactional(rollbackOn = Exception.class)
     @Override
     public OrderResponse createNewTransaction(OrderRequest request) {
-        Customer customer = customerService.getById(request.getCustomerId());
-        Table table= tableService.findById(request.getTableId());
+        CustomerResponse customerResponse = customerService.getById(request.getCustomerId());
+        Customer customer= CustomerMapper.customerMapper(customerResponse);
+        TableResponse tableResponse= tableService.findById(request.getTableId());
+        Table table= TableMapper.mapToTable(tableResponse);
         //1. buat objek order
         Order order = Order.builder()
                 .customer(customer)

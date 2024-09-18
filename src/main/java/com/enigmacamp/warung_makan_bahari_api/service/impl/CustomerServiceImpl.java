@@ -34,7 +34,7 @@ public class CustomerServiceImpl implements CustomerService {
             customerRepository.saveAndFlush(customer);
             return CustomerResponseMapper.customerResponseMapper(customer);
         } catch (DataIntegrityViolationException e) {
-            throw new DataIntegrityViolationException("phone number already exists");
+            throw new ResponseStatusException(HttpStatus.CONFLICT,"phone number already exists");
         }
 
     }
@@ -57,6 +57,7 @@ public class CustomerServiceImpl implements CustomerService {
 
         Customer customer= CustomerMapper.customerMapper(request);
         Customer findId= findByIdOrThrowError(customer.getId());
+        customerRepository.save(findId);
         return CustomerResponseMapper.customerResponseMapper(findId);
     }
 

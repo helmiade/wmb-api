@@ -2,6 +2,7 @@ package com.enigmacamp.warung_makan_bahari_api.mapper;
 
 import com.enigmacamp.warung_makan_bahari_api.dto.request.CustomerRequest;
 import com.enigmacamp.warung_makan_bahari_api.dto.request.RegisterCustomerRequest;
+import com.enigmacamp.warung_makan_bahari_api.dto.response.CustomerResponse;
 import com.enigmacamp.warung_makan_bahari_api.entity.Customer;
 import com.enigmacamp.warung_makan_bahari_api.entity.UserCredential;
 import com.enigmacamp.warung_makan_bahari_api.service.UserService;
@@ -25,6 +26,12 @@ public class CustomerMapper {
         return Customer.builder()
                 .name(customerRequest.getName())
                 .phoneNumber(customerRequest.getPhoneNumber())
+                .build();
+    }
+    public static Customer customerMapper(CustomerResponse customerResponse) {
+        return Customer.builder()
+                .name(customerResponse.getName())
+                .phoneNumber(customerResponse.getPhoneNumber())
                 .build();
     }
 

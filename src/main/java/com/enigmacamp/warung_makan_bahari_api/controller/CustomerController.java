@@ -11,18 +11,21 @@ import com.enigmacamp.warung_makan_bahari_api.mapper.CommonResponseMapper;
 import com.enigmacamp.warung_makan_bahari_api.mapper.PagingRequestMapper;
 import com.enigmacamp.warung_makan_bahari_api.mapper.PagingResponseMapper;
 import com.enigmacamp.warung_makan_bahari_api.service.CustomerService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/customers")
+@RequestMapping("/api/v1/customers")
+@SecurityRequirement(name = "Bearer Authenticator")
 @RequiredArgsConstructor
 public class CustomerController {
 
@@ -39,7 +42,7 @@ public class CustomerController {
 
     //get by id
     @GetMapping("/{id}")
-    public Customer getCustomerById(@PathVariable String id) {
+    public CustomerResponse getCustomerById(@PathVariable String id) {
         return customerService.getById(id);
     }
 
@@ -52,12 +55,6 @@ public class CustomerController {
         Page<Customer> customers=customerService.getAll(request);
         PagingResponse pagingResponse = pagingResponseMapper.pagingResponseToMapper(customers,page,size);
 
-//        CommonResponse<List<Customer>> response= CommonResponse.<List<Customer>>builder()
-//                .message("successfully get all customer")
-//                .statusCode(HttpStatus.OK.value())
-//                .data(customers.getContent())
-//                .paging(pagingResponse)
-//                .build();
         CommonResponse<List<Customer>> response= commonResponseMapper.commonResponseToMap(customers,pagingResponse);
         return ResponseEntity
                 .status(HttpStatus.OK.value())

@@ -10,6 +10,7 @@ import com.enigmacamp.warung_makan_bahari_api.mapper.CommonResponseMapper;
 import com.enigmacamp.warung_makan_bahari_api.mapper.PagingRequestMapper;
 import com.enigmacamp.warung_makan_bahari_api.mapper.PagingResponseMapper;
 import com.enigmacamp.warung_makan_bahari_api.service.MenuService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -20,8 +21,10 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/menu")
+@RequestMapping("/api/v1/menu")
 @RequiredArgsConstructor
+@SecurityRequirement(name = "Bearer Authenticator")
+@PreAuthorize("hasRole('ADMIN')")
 public class MenuController {
     private final MenuService menuService;
     private final CommonResponseMapper commonResponseMapper;

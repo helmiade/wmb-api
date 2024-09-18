@@ -11,6 +11,7 @@ import com.enigmacamp.warung_makan_bahari_api.mapper.CommonResponseMapper;
 import com.enigmacamp.warung_makan_bahari_api.mapper.PagingRequestMapper;
 import com.enigmacamp.warung_makan_bahari_api.mapper.PagingResponseMapper;
 import com.enigmacamp.warung_makan_bahari_api.service.OrderService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -22,6 +23,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/orders")
+@SecurityRequirement(name = "Bearer Authenticator")
 public class OrderController {
     private final CommonResponseMapper commonResponseMapper;
     private final PagingRequestMapper pagingRequestMapper;
@@ -49,10 +51,12 @@ public class OrderController {
     public ResponseEntity<?> getAllOrders(@RequestParam(required = false, defaultValue = "1") Integer page,
                                         @RequestParam(required = false, defaultValue = "5") Integer size) {
         PagingRequest request = pagingRequestMapper.pagingRequest(page, size);
-        Page<Order> order=orderService.getAll(request);
-        PagingResponse pagingResponse = pagingResponseMapper.pagingResponseToMapper(order,page,size);
-        CommonResponse<List<Order>> response= commonResponseMapper.commonResponseToMap(order,pagingResponse);
+        Page<Order> order = orderService.getAll(request);
+        PagingResponse pagingResponse = pagingResponseMapper.pagingResponseToMapper(order, page, size);
+        CommonResponse<List<Order>> response = commonResponseMapper.commonResponseToMap(order, pagingResponse);
         return ResponseEntity
                 .status(HttpStatus.OK.value())
                 .body(response);
+
+    }
 }

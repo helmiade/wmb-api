@@ -3,6 +3,7 @@ package com.enigmacamp.warung_makan_bahari_api.controller;
 import com.enigmacamp.warung_makan_bahari_api.dto.response.CommonResponse;
 import com.enigmacamp.warung_makan_bahari_api.dto.response.OrderDetailResponse;
 import com.enigmacamp.warung_makan_bahari_api.service.OrderDetailService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/order_details")
+@SecurityRequirement(name = "Bearer Authenticator")
 @RequiredArgsConstructor
 public class OrderDetailController {
     private final OrderDetailService orderDetailService;

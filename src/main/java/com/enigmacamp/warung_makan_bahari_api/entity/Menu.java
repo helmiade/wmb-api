@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Cascade;
 
 @Entity
 @Table(name="m_menu")
@@ -24,4 +25,10 @@ public class Menu {
 
     @Column(columnDefinition = "BIGINT CHECK (price>=0)")
     private Long price;
+
+    @OneToOne
+    @JoinColumn(name = "menu_image_id", unique = true)
+    @Cascade(org.hibernate.annotations.CascadeType.PERSIST)
+    private MenuImage menuImage;
+
 }
