@@ -5,11 +5,12 @@ import com.enigmacamp.warung_makan_bahari_api.dto.response.PagingResponse;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Configuration
+@Component
 public class CommonResponseMapper {
     public <T> CommonResponse<T> commonResponseToMap(T data) {
         return CommonResponse.<T>builder()

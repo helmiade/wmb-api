@@ -47,7 +47,6 @@ public class OrderServiceImpl implements OrderService {
                 .customer(customer)
                 .table(table)
                 .transDate(LocalDateTime.now())
-//                .orderDetails(orderDetails)
                 .build();
 
         orderRepository.saveAndFlush(order);
@@ -72,14 +71,13 @@ public class OrderServiceImpl implements OrderService {
         }
         order.setOrderDetails(orderDetails);
 
-        //set date
-//        order.setTransDate(LocalDateTime.now());
         orderDetailService.createBulk(orderDetails);
 
         return mapToOrderResponse(order);
     }
 
-    private static OrderResponse mapToOrderResponse(Order order) {
+    public static OrderResponse mapToOrderResponse(Order order) {
+
         List<OrderDetailResponse> orderDetailResponses= order.getOrderDetails().stream().map(orderDetail -> {
             return OrderDetailResponse.builder()
                     .orderDetailId(orderDetail.getId())
@@ -88,7 +86,7 @@ public class OrderServiceImpl implements OrderService {
                     .price(orderDetail.getPrice())
                     .quantity(orderDetail.getQuantity())
                     .build();
-        }).collect(toList());
+        }).collect(Collectors.toList());
 
         return OrderResponse.builder()
                 .orderId(order.getId())
@@ -105,23 +103,6 @@ public class OrderServiceImpl implements OrderService {
         return mapToOrderResponse(order);
     }
 
-
-//    public List<OrderResponse> getAll() {
-//        List<Order> orders = orderRepository.findAll();
-//
-//        List<OrderResponse> orderResponses = new ArrayList<>();
-//        for(Order order:orders){
-//            OrderResponse orderResponse = mapToOrderResponse(order);
-//            orderResponses.add(orderResponse);
-//        }
-//        //cara kedua
-////        List<OrderResponse> orderResponseList=orders.stream().map(order -> mapToOrderResponse(order)).collect(Collectors.toList());
-//        List<OrderResponse> orderResponseList=orders.stream().map(OrderServiceImpl::mapToOrderResponse).toList();
-//
-//
-//
-//        return orderResponseList;
-//    }
     @Override
     public Page<Order> getAll(PagingRequest request) {
         Pageable pageable= PageRequest.of(request.getPage()-1, request.getSize());

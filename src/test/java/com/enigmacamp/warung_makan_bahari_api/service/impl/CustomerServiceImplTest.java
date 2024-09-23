@@ -1,12 +1,18 @@
 package com.enigmacamp.warung_makan_bahari_api.service.impl;
 
+import com.enigmacamp.warung_makan_bahari_api.constant.ERole;
 import com.enigmacamp.warung_makan_bahari_api.dto.request.CustomerRequest;
 import com.enigmacamp.warung_makan_bahari_api.dto.request.PagingRequest;
+import com.enigmacamp.warung_makan_bahari_api.dto.request.RegisterCustomerRequest;
 import com.enigmacamp.warung_makan_bahari_api.dto.response.CustomerResponse;
 import com.enigmacamp.warung_makan_bahari_api.entity.Customer;
+import com.enigmacamp.warung_makan_bahari_api.entity.Role;
+import com.enigmacamp.warung_makan_bahari_api.entity.UserCredential;
 import com.enigmacamp.warung_makan_bahari_api.mapper.CustomerMapper;
 import com.enigmacamp.warung_makan_bahari_api.mapper.CustomerResponseMapper;
+import com.enigmacamp.warung_makan_bahari_api.mapper.UserCredentialMapper;
 import com.enigmacamp.warung_makan_bahari_api.repository.CustomerRepository;
+import com.enigmacamp.warung_makan_bahari_api.service.RoleService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -35,6 +41,13 @@ class CustomerServiceImplTest {
     @Mock
     private CustomerRepository customerRepository;
 
+    @Mock
+    private UserCredentialMapper userCredentialMapper;
+
+    @Mock
+    private RoleService roleService;
+
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -47,6 +60,18 @@ class CustomerServiceImplTest {
         CustomerRequest request = new CustomerRequest();
         request.setName("soleh");
         request.setPhoneNumber("0872728");
+        RegisterCustomerRequest customerRequest = RegisterCustomerRequest.builder()
+                .name("soleh")
+                .phoneNumber("0872728")
+                .isMember(true)
+                .username("helmiad166")
+                .password("Helmiade1604@")
+                .build();
+
+//        when(roleService.getOrSave(Role.builder().name(ERole.ROLE_CUSTOMER).build())).thenReturn(Role);
+        Role role = roleService.getOrSave(Role.builder().name(ERole.ROLE_CUSTOMER).build());
+
+        UserCredential userCredential= userCredentialMapper.mapToUserCredential(customerRequest, role);
 
         // Inisialisasi Customer object dari CustomerRequest
 
@@ -54,7 +79,7 @@ class CustomerServiceImplTest {
         when(customerRepository.saveAndFlush(any(Customer.class))).thenReturn(customer);
 
         // Act (aksi)
-        CustomerResponse customerResponse = customerService.createNew(request);
+        CustomerResponse customerResponse = customerService.createNew(customerRequest, userCredential);
 
         // Assert (verifikasi)
         assertEquals(request.getName(), customerResponse.getName());
@@ -72,10 +97,22 @@ class CustomerServiceImplTest {
 //                .name(request.getName())
 //                .phoneNumber(request.getPhoneNumber())
 //                .build();
+        RegisterCustomerRequest customerRequest = RegisterCustomerRequest.builder()
+                .name("soleh")
+                .phoneNumber("0872728")
+                .isMember(true)
+                .username("helmiad166")
+                .password("Helmiade1604@")
+                .build();
+
+//        when(roleService.getOrSave(Role.builder().name(ERole.ROLE_CUSTOMER).build())).thenReturn(Role);
+        Role role = roleService.getOrSave(Role.builder().name(ERole.ROLE_CUSTOMER).build());
+
+        UserCredential userCredential= userCredentialMapper.mapToUserCredential(customerRequest, role);
         Customer customer = CustomerMapper.customerMapper(request);
 
         when(customerRepository.saveAndFlush(any(Customer.class))).thenThrow(new DataIntegrityViolationException("phone number already exists"));
-        ResponseStatusException responseStatusException= assertThrows(ResponseStatusException.class, () -> customerService.createNew(request));
+        ResponseStatusException responseStatusException= assertThrows(ResponseStatusException.class, () -> customerService.createNew(customerRequest, userCredential));
         assertEquals("409 CONFLICT \"phone number already exists\"", responseStatusException.getMessage());
         verify(customerRepository, times(1)).saveAndFlush(any(Customer.class));
     }
@@ -122,25 +159,63 @@ class CustomerServiceImplTest {
     }
 
     @Test
-    void update_WhenCustomerFound_ShouldReturnCustomer() {
+    void update_WhenCustomerFound_ShouldSaveExistingCustomer() {
+        // Arrange
+        // Prepare request
         CustomerRequest request = new CustomerRequest();
         request.setName("soleh");
-        request.setPhoneNumber("93030");
-        Customer customer = CustomerMapper.customerMapper(request);
-        when(customerRepository.findById(customer.getId())).thenReturn(Optional.of(customer));
-        when(customerRepository.save(any(Customer.class))).thenReturn(customer);
-        CustomerResponse customerResponse= CustomerResponseMapper.customerResponseMapper(customer);
+        request.setPhoneNumber("0872728");
+        request.setId("123");
+
+        // Convert request to customer
+        Customer customerFromRequest = CustomerMapper.customerMapper(request);
+
+        // Prepare existing customer (ditemukan berdasarkan ID)
+        Customer existingCustomer = new Customer();
+        existingCustomer.setId(request.getId());
+        existingCustomer.setName("existingName");
+        existingCustomer.setPhoneNumber("0000000");
+
+        // Mock repository behavior to find existing customer
+        when(customerRepository.findById(request.getId())).thenReturn(Optional.of(existingCustomer));
+
+        // Mock repository save behavior to ensure the correct values are set
+        when(customerRepository.saveAndFlush(any(Customer.class))).thenAnswer(invocation -> {
+            Customer customerToSave = invocation.getArgument(0);
+            // Ensure existingCustomer is updated with values from request
+            existingCustomer.setName(customerToSave.getName());
+            existingCustomer.setPhoneNumber(customerToSave.getPhoneNumber());
+            return existingCustomer;
+        });
+
+        // Act
+        CustomerResponse customerResponse = customerService.update(request);
+
+        // Assert
+        assertNotNull(customerResponse);
         assertEquals(request.getName(), customerResponse.getName());
+        assertEquals(request.getPhoneNumber(), customerResponse.getPhoneNumber());
+        verify(customerRepository, times(1)).saveAndFlush(existingCustomer);
     }
+
+
 
 
     @Test
     void deleteById() {
-        Customer request = new Customer();
-        request.setName("soleh");
-        request.setId("123");
+        Customer request= Customer.builder()
+                .name("helmi")
+                .id("123")
+                .build();
         when(customerRepository.findById(request.getId())).thenReturn(Optional.of(request));
+        doNothing().when(customerRepository).delete(request);
         customerService.deleteById(request.getId());
+
+        // Assert
+        // Verifying findById is called once
+        verify(customerRepository, times(1)).findById(request.getId());
+
+        // Verifying delete is called once with the correct customer object
         verify(customerRepository, times(1)).delete(request);
 
     }

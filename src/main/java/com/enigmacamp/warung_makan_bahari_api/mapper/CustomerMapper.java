@@ -24,6 +24,7 @@ public class CustomerMapper {
     }
     public static Customer customerMapper(CustomerRequest customerRequest) {
         return Customer.builder()
+                .id(customerRequest.getId())
                 .name(customerRequest.getName())
                 .phoneNumber(customerRequest.getPhoneNumber())
                 .build();
@@ -34,5 +35,6 @@ public class CustomerMapper {
                 .phoneNumber(customerResponse.getPhoneNumber())
                 .build();
     }
+
 
 }

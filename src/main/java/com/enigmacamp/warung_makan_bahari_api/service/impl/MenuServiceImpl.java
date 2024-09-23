@@ -33,10 +33,11 @@ public class MenuServiceImpl implements MenuService {
     public MenuResponse create(MenuRequest menuRequest) {
         validationUtil.validate(menuRequest);
         MenuImage menuImage = new MenuImage();
-        if(!menuRequest.getMultipartFile().isEmpty()) menuImage = menuImageService.createFile(menuRequest.getMultipartFile());
+        if(!menuRequest.getImage().isEmpty()) menuImage = menuImageService.createFile(menuRequest.getImage());
         Menu menu = Menu.builder()
                 .name(menuRequest.getMenuName())
                 .price(menuRequest.getPrice())
+                .menuImage(menuImage)
                 .build();
         menuRepository.saveAndFlush(menu);
         FileResponse fileResponse= FileResponse.builder()
@@ -44,7 +45,7 @@ public class MenuServiceImpl implements MenuService {
                 .url("/api/menu/"+menu.getId()+"/image")
                 .build();
 
-        return menuResponseMapper.mapToMenuResponse(menu);
+        return menuResponseMapper.mapToMenuResponse(menu, fileResponse);
     }
 
     @Override

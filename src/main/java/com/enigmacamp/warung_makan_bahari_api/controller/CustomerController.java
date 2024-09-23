@@ -1,16 +1,22 @@
 package com.enigmacamp.warung_makan_bahari_api.controller;
 
 
+import com.enigmacamp.warung_makan_bahari_api.constant.ERole;
 import com.enigmacamp.warung_makan_bahari_api.dto.request.CustomerRequest;
 import com.enigmacamp.warung_makan_bahari_api.dto.request.PagingRequest;
+import com.enigmacamp.warung_makan_bahari_api.dto.request.RegisterCustomerRequest;
 import com.enigmacamp.warung_makan_bahari_api.dto.response.CommonResponse;
 import com.enigmacamp.warung_makan_bahari_api.dto.response.CustomerResponse;
 import com.enigmacamp.warung_makan_bahari_api.dto.response.PagingResponse;
 import com.enigmacamp.warung_makan_bahari_api.entity.Customer;
+import com.enigmacamp.warung_makan_bahari_api.entity.Role;
+import com.enigmacamp.warung_makan_bahari_api.entity.UserCredential;
 import com.enigmacamp.warung_makan_bahari_api.mapper.CommonResponseMapper;
 import com.enigmacamp.warung_makan_bahari_api.mapper.PagingRequestMapper;
 import com.enigmacamp.warung_makan_bahari_api.mapper.PagingResponseMapper;
+import com.enigmacamp.warung_makan_bahari_api.mapper.UserCredentialMapper;
 import com.enigmacamp.warung_makan_bahari_api.service.CustomerService;
+import com.enigmacamp.warung_makan_bahari_api.service.RoleService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,13 +37,17 @@ public class CustomerController {
 
     private final CommonResponseMapper commonResponseMapper;
     private final CustomerService customerService;
+    private final UserCredentialMapper userCredentialMapper;
+    private final RoleService roleService;
     private final PagingRequestMapper pagingRequestMapper;
     private final PagingResponseMapper pagingResponseMapper;
 
-    //post/ create new customer
+//    post/ create new customer
     @PostMapping
-    public CustomerResponse createNewCustomer(@RequestBody CustomerRequest request) {
-        return customerService.createNew(request);
+    public CustomerResponse createNewCustomer(@RequestBody RegisterCustomerRequest request) {
+        Role role = roleService.getOrSave(Role.builder().name(ERole.ROLE_CUSTOMER).build());
+        UserCredential userCredential=userCredentialMapper.mapToUserCredential(request, role);
+        return customerService.createNew(request, userCredential);
     }
 
     //get by id

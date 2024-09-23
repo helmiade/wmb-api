@@ -16,5 +16,5 @@ public class MenuRequest {
     @NotNull
     @Positive
     private Long price;
-    private MultipartFile multipartFile;
+    private MultipartFile image;
 }

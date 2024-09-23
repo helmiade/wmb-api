@@ -3,6 +3,7 @@ package com.enigmacamp.warung_makan_bahari_api.entity;
 import jakarta.persistence.*;
 import jakarta.persistence.Table;
 import lombok.*;
+import org.hibernate.annotations.Cascade;
 
 @Entity
 @Table(name = "m_customer")
@@ -27,5 +28,6 @@ public class Customer {
 
     @OneToOne
     @JoinColumn(name = "m_user_credential_id")
+    @Cascade(org.hibernate.annotations.CascadeType.PERSIST)
     private UserCredential userCredential;
 }

@@ -2,14 +2,18 @@ package com.enigmacamp.warung_makan_bahari_api.service.impl;
 
 import com.enigmacamp.warung_makan_bahari_api.dto.request.CustomerRequest;
 import com.enigmacamp.warung_makan_bahari_api.dto.request.PagingRequest;
+import com.enigmacamp.warung_makan_bahari_api.dto.request.RegisterCustomerRequest;
 import com.enigmacamp.warung_makan_bahari_api.dto.response.CommonResponse;
 import com.enigmacamp.warung_makan_bahari_api.dto.response.CustomerResponse;
 import com.enigmacamp.warung_makan_bahari_api.entity.Customer;
+import com.enigmacamp.warung_makan_bahari_api.entity.UserCredential;
 import com.enigmacamp.warung_makan_bahari_api.mapper.CustomerMapper;
 import com.enigmacamp.warung_makan_bahari_api.mapper.CustomerResponseMapper;
 import com.enigmacamp.warung_makan_bahari_api.repository.CustomerRepository;
 import com.enigmacamp.warung_makan_bahari_api.service.CustomerService;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
@@ -22,14 +26,15 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor(onConstructor_ = {@Autowired})
+@RequiredArgsConstructor
 public class CustomerServiceImpl implements CustomerService {
+    private static final Logger log = LoggerFactory.getLogger(CustomerServiceImpl.class);
     private final CustomerRepository customerRepository;
     private final CustomerMapper customerMapper;
 
     @Override
-    public CustomerResponse createNew(CustomerRequest request) {
-        Customer customer = CustomerMapper.customerMapper(request);
+    public CustomerResponse createNew(RegisterCustomerRequest request, UserCredential userCredential) {
+        Customer customer = CustomerMapper.customerMapper(request, userCredential);
         try {
             customerRepository.saveAndFlush(customer);
             return CustomerResponseMapper.customerResponseMapper(customer);
@@ -57,7 +62,10 @@ public class CustomerServiceImpl implements CustomerService {
 
         Customer customer= CustomerMapper.customerMapper(request);
         Customer findId= findByIdOrThrowError(customer.getId());
-        customerRepository.save(findId);
+        findId.setName(customer.getName());
+        findId.setPhoneNumber(customer.getPhoneNumber());
+        findId.setIsMember(customer.getIsMember());
+        customerRepository.saveAndFlush(findId);
         return CustomerResponseMapper.customerResponseMapper(findId);
     }
 

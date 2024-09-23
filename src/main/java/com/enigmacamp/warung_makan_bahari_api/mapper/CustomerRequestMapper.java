@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 public class CustomerRequestMapper {
     public static CustomerRequest customerRequestMapper(Customer customer) {
         return CustomerRequest.builder()
+                .id(customer.getId())
                 .name(customer.getName())
                 .phoneNumber(customer.getPhoneNumber())
                 .build();
